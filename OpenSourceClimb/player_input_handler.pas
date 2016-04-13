@@ -15,21 +15,68 @@ begin
     Player.WriteConsole('!police => calls your local police department.', COLOR_GREEN);
 end;
 
-function OnPlayerCommand(Player: TActivePlayer; Command: string): boolean;
+procedure DisplayStats(Player: TActivePlayer; Nickname: string);
 begin
-    case LowerCase(Command) of
+    Player.WriteConsole('Displaying ' + Nickname + '''s stats:', COLOR_GREEN);
+    //TODO: Add query to database to retrieve stats.
+end;
+
+//TODO: Find a better naming for this function.
+function GetCommandParameter(Input: string): string;
+var
+    FirstSpacePosition: integer;
+begin
+    FirstSpacePosition := Pos(' ', Input);
+    Result := Copy(Input, FirstSpacePosition+1, Length(Input)-FirstSpacePosition);
+end;
+
+function OnPlayerCommand(Player: TActivePlayer; Command: string): boolean;
+var
+    SplitCommandArray: TStringList;
+begin
+    SplitCommandArray := File.CreateStringList;
+    SplitRegExpr(REGULAR_EXPRESSION_WHITESPACE, Command, SplitCommandArray);
+
+    case LowerCase(SplitCommandArray.Strings[0]) of
         '/commands', '/cmds', '/command', '/cmd', '/help':
-            DisplayAvailableCommands(Player);
+            if SplitCommandArray.Count = 1 then
+                DisplayAvailableCommands(Player);
+
+        '/stats':
+            if SplitCommandArray.Count = 1 then
+                DisplayStats(Player, Player.Name)
+            else
+                DisplayStats(Player, GetCommandParameter(Command));
     end;
+
+    SplitCommandArray.Free;
     Result := false;
 end;
 
 procedure OnPlayerSpeak(Player: TActivePlayer; Text: string);
+var
+    SplitTextArray: TStringList;
 begin
-    case LowerCase(Text) of
+    SplitTextArray := File.CreateStringList;
+    SplitRegExpr(REGULAR_EXPRESSION_WHITESPACE, Text, SplitTextArray);
+
+    case LowerCase(SplitTextArray.Strings[0]) of
         '!commands', '!cmds', '!command', '!cmd', '!help':
-            DisplayAvailableCommands(Player);
+            if SplitTextArray.Count = 1 then
+                DisplayAvailableCommands(Player);
+
+        '!stats':
+            if SplitTextArray.Count = 1 then
+                DisplayStats(Player, Player.Name)
+            else
+                DisplayStats(Player, GetCommandParameter(Text));
+
+        '!police', '!policja':
+            if SplitTextArray.Count = 1 then
+                Players.WriteConsole('Local police department has been requested.', COLOR_GREEN);
     end;
+
+    SplitTextArray.Free;
 end;
 
 end.
