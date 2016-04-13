@@ -22,7 +22,7 @@ begin
 end;
 
 //TODO: Find a better naming for this function.
-function GetInputParameter(Input: string): string;
+function GetCommandParameter(Input: string): string;
 var
     FirstSpacePosition: integer;
 begin
@@ -46,7 +46,7 @@ begin
             if SplitCommandArray.Count = 1 then
                 DisplayStats(Player, Player.Name)
             else
-                DisplayStats(Player, GetInputParameter(Command));
+                DisplayStats(Player, GetCommandParameter(Command));
     end;
 
     SplitCommandArray.Free;
@@ -69,7 +69,7 @@ begin
             if SplitTextArray.Count = 1 then
                 DisplayStats(Player, Player.Name)
             else
-                DisplayStats(Player, GetInputParameter(Text));
+                DisplayStats(Player, GetCommandParameter(Text));
 
         '!police', '!policja':
             if SplitTextArray.Count = 1 then
