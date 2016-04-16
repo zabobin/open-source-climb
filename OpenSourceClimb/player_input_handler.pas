@@ -7,6 +7,9 @@ interface
     procedure OnPlayerSpeak(Player: TActivePlayer; Text: string);
 
 implementation
+function HelloWorld(): single;
+external 'hello_world@lib_http_requests.so';
+
 procedure DisplayAvailableCommands(Player: TActivePlayer);
 begin
     Player.WriteConsole('Available commands:', COLOR_GREEN);
@@ -47,6 +50,9 @@ begin
                 DisplayStats(Player, Player.Name)
             else
                 DisplayStats(Player, GetCommandParameter(Command));
+
+        '/testlib':
+            Player.WriteConsole(FloatToStr(HelloWorld()), COLOR_GREEN);
     end;
 
     SplitCommandArray.Free;
